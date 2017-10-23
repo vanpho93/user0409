@@ -18,4 +18,11 @@ app.post('/dangky', parser, (req, res) => {
     .catch((err) => res.send('Dang ky that bai. ' + err.message ));
 });
 
+app.post('/dangnhap', parser, (req, res) => {
+    const { email, password } = req.body;
+    User.signIn(email, password)
+    .then(() => res.send('Dang nhap thanh cong'))
+    .catch((err) => res.send('Dang nhap that bai. ' + err.message ));
+});
+
 app.listen(3000, () => console.log('Server started!'));

@@ -43,8 +43,8 @@ User.signIn = async function(email, password) {
 
 // User.signUp('abcdef@g.com', '123456', 'Pho ABCD')
 
-User.signIn('abcdef@g.com', '123456')
-.then(() => console.log('Dang nhap thanh cong'))
-.catch(err => console.log('Dang nhap that bai: ' + err.message))
+// User.signIn('abcdef@g.com', '123456')
+// .then(() => console.log('Dang nhap thanh cong'))
+// .catch(err => console.log('Dang nhap that bai: ' + err.message))
 
 module.exports = User;
