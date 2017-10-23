@@ -1,5 +1,4 @@
 const express = require('express');
-const { hash } = require('bcrypt');
 
 require('./db');
 const parser = require('body-parser').urlencoded({ extended: false });
@@ -10,14 +9,11 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 
 app.get('/dangky', (req, res) => res.render('dangky'));
+app.get('/dangnhap', (req, res) => res.render('dangnhap'));
 
 app.post('/dangky', parser, (req, res) => {
     const { email, password, name } = req.body;
-    hash(password, 8)
-    .then(encrypted => {
-        const user = new User({ email, name, password: encrypted });
-        return user.save()
-    })
+    User.signUp(email, password, name)
     .then(() => res.send('Dang ky thanh cong'))
     .catch((err) => res.send('Dang ky that bai. ' + err.message ));
 });
