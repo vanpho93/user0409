@@ -39,6 +39,7 @@ User.signIn = async function(email, password) {
     if (!user) throw new Error('Email khong ton tai.');
     const same = await compare(password, user.password);
     if (!same) throw new Error('Sai password.');
+    return user;
 };
 
 // User.signUp('abcdef@g.com', '123456', 'Pho ABCD')

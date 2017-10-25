@@ -1,9 +1,9 @@
 const express = require('express');
 const session = require('express-session');
+const User = require('./user');
 
 require('./db');
 const parser = require('body-parser').urlencoded({ extended: false });
-const User = require('./user');
 
 const app = express();
 
@@ -22,8 +22,9 @@ app.get('/dangky', (req, res) => res.render('dangky'));
 app.get('/dangnhap', (req, res) => res.render('dangnhap'));
 
 app.get('/user', (req, res) => {
-    if(!req.session.daDangNhap) return res.redirect('/dangnhap');
-    res.render('user');
+    const { user } = req.session;
+    if(!user) return res.redirect('/dangnhap');
+    res.render('user', { user });
 });
 
 app.post('/dangky', parser, (req, res) => {
@@ -36,8 +37,8 @@ app.post('/dangky', parser, (req, res) => {
 app.post('/dangnhap', parser, (req, res) => {
     const { email, password } = req.body;
     User.signIn(email, password)
-    .then(() => {
-        req.session.daDangNhap = true;
+    .then(user => {
+        req.session.user = { email, name: user.name };
         res.status(200).send('Dang nhap thanh cong');
     })
     .catch((err) => res.status(401).send('Dang nhap that bai. ' + err.message ));
