@@ -6,7 +6,8 @@ app.use(session({
     secret: 'asd823e8uwuq23',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 100000000 }
+    cookie: { maxAge: 5000 },
+    rolling: true
 }));
 
 app.get('/muave', (req, res) => {
@@ -19,6 +20,5 @@ app.get('/vaorap', (req, res) => {
     if (!req.session.daMuaVe) return res.send('Ban phai mua ve truoc');
     res.send('Moi xem phim');
 });
-
 
 app.listen(3000, () => console.log('Server started!'));

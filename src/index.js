@@ -11,6 +11,10 @@ app.set('views', './views');
 app.get('/dangky', (req, res) => res.render('dangky'));
 app.get('/dangnhap', (req, res) => res.render('dangnhap'));
 
+app.get('/user', (req, res) => {
+    res.render('user');
+});
+
 app.post('/dangky', parser, (req, res) => {
     const { email, password, name } = req.body;
     User.signUp(email, password, name)
