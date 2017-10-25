@@ -11,20 +11,35 @@ app.use(session({
     secret: 'asd823e8uwuq23',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 5000 },
+    cookie: { maxAge: 5000000 },
     rolling: true
 }));
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
 
-app.get('/dangky', (req, res) => res.render('dangky'));
-app.get('/dangnhap', (req, res) => res.render('dangnhap'));
+const redirectIfSignedIn = (req, res, next) => {
+    const { user } = req.session;
+    if(user) return res.redirect('/user');
+    next();
+}
 
-app.get('/user', (req, res) => {
+const requireSignedIn = (req, res, next) => {
     const { user } = req.session;
     if(!user) return res.redirect('/dangnhap');
-    res.render('user', { user });
+    next();
+}
+
+app.get('/dangky', redirectIfSignedIn, (req, res) => {
+    res.render('dangky');
+});
+
+app.get('/dangnhap', redirectIfSignedIn, (req, res) => {
+    res.render('dangnhap');
+});
+
+app.get('/user', requireSignedIn, (req, res) => {
+    res.render('user', { user: req.session.user });
 });
 
 app.post('/dangky', parser, (req, res) => {
