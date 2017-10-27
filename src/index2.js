@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('./user');
 const cookieParser = require('cookie-parser');
+const { createToken, verifyToken } = require('./jwt');
 
 require('./db');
 const parser = require('body-parser').urlencoded({ extended: false });
@@ -11,13 +12,22 @@ app.set('view engine', 'ejs');
 app.set('views', './views');
 
 const redirectIfSignedIn = (req, res, next) => {
-    // todo 1
-    next();
+    const { token } = req.cookies;
+    if (!token) return next();
+    verifyToken(token)
+    .then(() => res.redirect('/user'))
+    .catch(() => next());
 }
 
 const requireSignedIn = (req, res, next) => {
-    // todo 2
-    next();
+    const { token } = req.cookies;
+    if (!token) return res.redirect('/dangnhap');
+    verifyToken(token)
+    .then(user => {
+        req.user = user;
+        next();
+    })
+    .catch(() => res.redirect('/dangnhap'));
 }
 
 app.get('/dangky', redirectIfSignedIn, (req, res) => {
@@ -29,8 +39,7 @@ app.get('/dangnhap', redirectIfSignedIn, (req, res) => {
 });
 
 app.get('/user', requireSignedIn, (req, res) => {
-    // todo 4
-    res.render('user', { user: { name: 'Khoa', email: 'khoa@gmail.com' } });
+    res.render('user', { user: req.user });
 });
 
 app.post('/dangky', parser, (req, res) => {
@@ -43,9 +52,10 @@ app.post('/dangky', parser, (req, res) => {
 app.post('/dangnhap', parser, (req, res) => {
     const { email, password } = req.body;
     User.signIn(email, password)
-    .then(user => {
-        // todo 3
-        res.status(200).send('Dang nhap thanh cong');
+    .then(user => createToken(user))
+    .then(token => {
+        res.cookie('token', token);
+        res.send('Dang nhap thanh cong');
     })
     .catch((err) => res.status(401).send('Dang nhap that bai. ' + err.message ));
 });
